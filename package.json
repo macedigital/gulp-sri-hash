@@ -1,0 +1,40 @@
+{
+  "name": "gulp-sri-hash",
+  "version": "1.0.0",
+  "description": "Gulp plugin for adding Sub-Resource-Integrity (SRI) hashes in-place to asset links found in HTML files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/_mocha test",
+    "test-cov": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --reporter dot --check-leaks test/ 2> /dev/null",
+    "test-travis": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/ 2> /dev/null"
+  },
+  "keywords": [
+    "gulp",
+    "plugin",
+    "sri",
+    "sub-resource-integrity"
+  ],
+  "author": "Matthias Adler <macedigital@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macedigital/gulp-sri-hash.git"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.0.2",
+    "sinon": "^1.17.5",
+    "sinon-chai": "^2.8.0",
+    "stream-assert": "^2.0.3"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7",
+    "through2": "^2.0.1"
+  },
+  "engines": {
+    "node": ">= 4.x"
+  }
+}

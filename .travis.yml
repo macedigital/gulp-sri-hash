@@ -1,0 +1,7 @@
+sudo: false
+language: node_js
+node_js:
+  - "4"
+  - "6"
+script: "npm run-script test-travis"
+after_script: "npm install codecov.io && cat ./coverage/lcov.info | codecov"
