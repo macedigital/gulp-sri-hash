@@ -26,13 +26,20 @@ function updateDOM(file, algorithm) {
   return file;
 
   function addIntegrityAttribute(idx, node) {
-    var fullPath = path.normalize(file.base + getPath(node));
+    var localPath = getPath(node);
 
-    $(node).attr('integrity', getFileHash(fullPath, algorithm));
+    if (localPath) {
+      $(node).attr('integrity', getFileHash(path.normalize(file.base + getPath(node)), algorithm));
+    }
   }
 
   function getPath(node) {
     var src = node.type == 'script' ? $(node).attr('src') : $(node).attr('href');
+
+    // ignore paths that look like like urls as they cannot be resolved on local filesystem
+    if (src.match(/^(https?:)?\/\//)) {
+      return null;
+    }
 
     if (src.charCodeAt(0) !== 47) {
       src = '/' + src;
