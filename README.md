@@ -1,4 +1,4 @@
-![status](https://secure.travis-ci.org/macedigital/gulp-sri-hash.svg?branch=master)
+![status](https://api.travis-ci.org/macedigital/gulp-sri-hash.svg?branch=master)
 
 Adds [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) hashes to HTML files.
 
