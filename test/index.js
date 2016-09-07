@@ -53,7 +53,9 @@ describe('gulp-sri-hash', function () {
 
     it('should bail on unsupported hashing algorithm', function () {
       assert.throws(function() {
-        return gulp.src(fixtures('*')).pipe(plugin({algo: 'invalid'}));
+        return gulp.src(fixtures('*'))
+          .pipe(plugin({algo: 'invalid'}))
+        ;
       }, /Hashing algorithm is unsupported/);
     });
 
@@ -109,6 +111,35 @@ describe('gulp-sri-hash', function () {
         ;
       });
 
+    });
+
+    it('should apply custom selectors', function (done) {
+
+      gulp.src(fixtures('transform.html'))
+        .pipe(streamAssert.length(1))
+        .pipe(streamAssert.first(function (vinyl) {
+          assertCount(vinyl.contents, '[integrity]', 0);
+        }))
+        .pipe(plugin({selector: 'script'}))
+        .pipe(streamAssert.first(function (vinyl) {
+          assertCount(vinyl.contents, '[integrity]', 1);
+          assertCount(vinyl.contents, 'script[integrity]', 1);
+        }))
+        .pipe(streamAssert.end(done))
+      ;
+    });
+
+    it('should apply hashing to whitelisted prefixes', function (done) {
+      gulp.src(fixtures('transform.html'))
+        .pipe(streamAssert.length(1))
+        .pipe(streamAssert.first(function (vinyl) {
+          assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 0);
+        }))
+        .pipe(plugin({prefix: 'https://secure.com'}))
+        .pipe(streamAssert.first(function (vinyl) {
+          assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 1);
+        }))
+        .pipe(streamAssert.end(done));
     });
 
   });
