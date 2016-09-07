@@ -35,12 +35,42 @@ This will look for css and js file references contained in all html-files, calcu
 
 Referenced css- and js-files must be accessible from the local filesystem. In order to calculate correct hashes, style and script files should not be modified any further by build steps running later.
 
-Default hashing algorithm is `sha384`, but can be changed like this:
+## API
+
+#### algo (optional)
+Type: `String`
+
+Select hashing algorithm. Supported algorithms: 'sha256', 'sha384', and 'sha512'.
+
+Default: `sha384`
+
+#### prefix (optional)
+Type: `String` (optional)
+
+Strips string from beginning of referenced URI in HTMl files. Useful if references do not match directory structure or already contain CDN hostname.
+
+Default: ''
+
+#### selector (optional)
+Type: `String`
+
+Only look for nodes matching this custom (jQuery-style) selector.
+
+Default: 'link[href][rel=stylesheet]:not([integrity]), script[src]:not([integrity])'
+
+### Example
+
+Following snippet shows all options in action:
 
 ```js
-.pipe(sriHash({algo: 'sha512'}))
+  // ...
+  .pipe(sriHash({
+    algo: 'sha512', // use strong hashing
+    prefix: '/assets', // no trailing slash
+    selector: 'link[href]', // limit selector
+  }))
+  // ...
 ```
-
 ## LICENSE
 
 MIT License
