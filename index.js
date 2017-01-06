@@ -74,7 +74,7 @@ function updateDOM(file, config) {
     var localPath = resolvePath(node, config);
 
     if (localPath) {
-      $(node).attr('integrity', getFileHash(path.normalize(file.base + localPath), config.algo));
+      $(node).attr('integrity', getFileHash(path.join(path.dirname(file.path), localPath), config.algo));
     }
   }
 }
