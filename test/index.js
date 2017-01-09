@@ -42,7 +42,7 @@ describe('gulp-sri-hash', function () {
     });
 
     it('should throw on streams', function (done) {
-        gulp.src(fixtures('*.html'), {buffer: false})
+        gulp.src(fixtures('flat/*.html'), {buffer: false})
           .pipe(streamAssert.length(3))
           .pipe(plugin())
           .on('error', function (err) {
@@ -53,14 +53,14 @@ describe('gulp-sri-hash', function () {
 
     it('should bail on unsupported hashing algorithm', function () {
       assert.throws(function() {
-        return gulp.src(fixtures('*'))
+        return gulp.src(fixtures('**/*'))
           .pipe(plugin({algo: 'invalid'}))
         ;
       }, /Hashing algorithm is unsupported/);
     });
 
     it('should ignore missing external files', function (done) {
-      var noopFile = fixtures('noop.html');
+      var noopFile = fixtures('flat/noop.html');
       var expectedContent = fs.readFileSync(noopFile).toString();
 
       gulp.src(noopFile)
@@ -74,7 +74,7 @@ describe('gulp-sri-hash', function () {
     });
 
     it('should ignore existing `integrity` attribute', function (done) {
-      var ignoreFile = fixtures('ignore.html');
+      var ignoreFile = fixtures('flat/ignore.html');
       var expectedContent = fs.readFileSync(ignoreFile).toString();
 
       gulp.src(ignoreFile)
@@ -86,60 +86,111 @@ describe('gulp-sri-hash', function () {
         .pipe(streamAssert.end(done));
     });
 
-    ['sha256', 'sha384', 'sha512'].forEach(function (algo) {
+    describe('with absolute path resolution', function() {
 
-      it('should apply integrity hash ' + algo, function (done) {
+      ['sha256', 'sha384', 'sha512'].forEach(function (algo) {
 
-        gulp.src([fixtures('**/*.html')], {base: __dirname + '/fixtures'})
-          .pipe(plugin({algo: algo}))
-          .pipe(streamAssert.length(3))
+        it('should apply integrity hash ' + algo, function (done) {
+
+          gulp.src([fixtures('flat/**/*.html')], {base: __dirname + '/fixtures/flat'})
+            .pipe(plugin({algo: algo}))
+            .pipe(streamAssert.length(3))
+            .pipe(streamAssert.first(function (vinyl) {
+              assertCount(vinyl.contents, '[integrity]', 2);
+              assertCount(vinyl.contents, '[integrity="incorrect-but-must-not-be-altered"]', 2);
+            }))
+            .pipe(streamAssert.second(function (vinyl) {
+              assertCount(vinyl.contents, '[integrity]', 0);
+            }))
+            .pipe(streamAssert.last(function (vinyl) {
+              var checksum = require(fixtures('flat/checksum.json'))[algo];
+              var hash = [algo, checksum].join('-');
+              assert.ok(vinyl.path.match(/transform\.html$/));
+              assertCount(vinyl.contents, '[integrity]', 3);
+              assertCount(vinyl.contents, '[integrity="'+hash+'"]', 3);
+            }))
+            .pipe(streamAssert.end(done))
+          ;
+        });
+
+      });
+
+      it('should apply custom selectors', function (done) {
+
+        gulp.src(fixtures('flat/transform.html'))
+          .pipe(streamAssert.length(1))
           .pipe(streamAssert.first(function (vinyl) {
-            assertCount(vinyl.contents, '[integrity]', 2);
-            assertCount(vinyl.contents, '[integrity="incorrect-but-must-not-be-altered"]', 2);
-          }))
-          .pipe(streamAssert.second(function (vinyl) {
             assertCount(vinyl.contents, '[integrity]', 0);
           }))
-          .pipe(streamAssert.last(function (vinyl) {
-            var checksum = require(fixtures('checksum.json'))[algo];
-            var hash = [algo, checksum].join('-');
-            assert.ok(vinyl.path.match(/transform\.html$/));
-            assertCount(vinyl.contents, '[integrity]', 3);
-            assertCount(vinyl.contents, '[integrity="'+hash+'"]', 3);
+          .pipe(plugin({selector: 'script'}))
+          .pipe(streamAssert.first(function (vinyl) {
+            assertCount(vinyl.contents, '[integrity]', 1);
+            assertCount(vinyl.contents, 'script[integrity]', 1);
           }))
           .pipe(streamAssert.end(done))
         ;
       });
 
+      it('should apply hashing to whitelisted prefixes', function (done) {
+        gulp.src(fixtures('flat/transform.html'))
+          .pipe(streamAssert.length(1))
+          .pipe(streamAssert.first(function (vinyl) {
+            assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 0);
+          }))
+          .pipe(plugin({prefix: 'https://secure.com'}))
+          .pipe(streamAssert.first(function (vinyl) {
+            assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 1);
+          }))
+          .pipe(streamAssert.end(done));
+      });
+
     });
 
-    it('should apply custom selectors', function (done) {
+    describe('with relative path resolution', function() {
 
-      gulp.src(fixtures('transform.html'))
-        .pipe(streamAssert.length(1))
-        .pipe(streamAssert.first(function (vinyl) {
-          assertCount(vinyl.contents, '[integrity]', 0);
-        }))
-        .pipe(plugin({selector: 'script'}))
-        .pipe(streamAssert.first(function (vinyl) {
-          assertCount(vinyl.contents, '[integrity]', 1);
-          assertCount(vinyl.contents, 'script[integrity]', 1);
-        }))
-        .pipe(streamAssert.end(done))
-      ;
-    });
+      ['sha256', 'sha384', 'sha512'].forEach(function (algo) {
 
-    it('should apply hashing to whitelisted prefixes', function (done) {
-      gulp.src(fixtures('transform.html'))
-        .pipe(streamAssert.length(1))
-        .pipe(streamAssert.first(function (vinyl) {
-          assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 0);
-        }))
-        .pipe(plugin({prefix: 'https://secure.com'}))
-        .pipe(streamAssert.first(function (vinyl) {
-          assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 1);
-        }))
-        .pipe(streamAssert.end(done));
+        it('should apply integrity hash ' + algo, function (done) {
+
+          var checksums = require(fixtures('nested/checksum.json'));
+          var styleHash = checksums['style'][algo];
+          var scriptHash = checksums['script'][algo];
+
+          gulp.src(fixtures('nested/**/*.html'))
+            .pipe(streamAssert.length(2))
+            .pipe(plugin({algo: algo, relative: true}))
+            .pipe(streamAssert.length(2))
+            .pipe(streamAssert.first(function (vinyl) {
+              assertCount(vinyl.contents, 'link[integrity="' + styleHash +'"]', 3);
+              assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"]', 3);
+              assert.ok(vinyl.path.match(/nested\/folder\/index\.html$/))
+            }))
+            .pipe(streamAssert.second(function (vinyl) {
+              assertCount(vinyl.contents, 'link[integrity="' + styleHash + '"]', 1);
+              assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"]', 1);
+              assert.ok(vinyl.path.match(/nested\/folder\/html\/index\.html$/))
+            }))
+            .pipe(streamAssert.end(done));
+        });
+
+      });
+
+      it('should apply custom selectors', function (done) {
+
+        var checksum = require(fixtures('nested/checksum.json'))['script']['sha384'];
+
+        gulp.src(fixtures('nested/folder/html/*.html'))
+          .pipe(streamAssert.length(1))
+          .pipe(streamAssert.first(function (vinyl) {
+            assertCount(vinyl.contents, '[integrity]', 0);
+          }))
+          .pipe(plugin({selector: 'script[data-sri-hash=1]'}))
+          .pipe(streamAssert.first(function (vinyl) {
+            assertCount(vinyl.contents, '[integrity="' + checksum + '"]', 1);
+          }))
+          .pipe(streamAssert.end(done));
+      });
+
     });
 
   });

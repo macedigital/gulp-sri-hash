@@ -16,7 +16,7 @@ var cache;
 module.exports = gulpSriHashPlugin;
 module.exports.PLUGIN_NAME = PLUGIN_NAME;
 
-function resolvePath(node, config) {
+function normalizePath(node, config) {
   var src = node.name == 'script' ? node.attribs.src : node.attribs.href;
 
   if (!src) {
@@ -39,6 +39,14 @@ function resolvePath(node, config) {
   }
 
   return src;
+}
+
+function resolveRelativePath(file, localPath) {
+  return path.join(path.dirname(file.path), localPath);
+}
+
+function resolveAbsolutePath(file, localPath) {
+  return path.normalize(file.base + localPath)
 }
 
 function calculateSri(fullPath, algorithm) {
@@ -71,10 +79,12 @@ function updateDOM(file, config) {
   return file;
 
   function addIntegrityAttribute(idx, node) {
-    var localPath = resolvePath(node, config);
+    var localPath = normalizePath(node, config);
+    var resolver;
 
     if (localPath) {
-      $(node).attr('integrity', getFileHash(path.join(path.dirname(file.path), localPath), config.algo));
+      resolver = config.relative ? resolveRelativePath : resolveAbsolutePath;
+      $(node).attr('integrity', getFileHash(resolver(file, localPath), config.algo));
     }
   }
 }
@@ -84,7 +94,8 @@ function configure(options) {
   var config = {
     algo: opts.algo || DEFAULT_ALGO,
     prefix: opts.prefix || '',
-    selector: opts.selector || DEFAULT_SELECTOR
+    selector: opts.selector || DEFAULT_SELECTOR,
+    relative: !!opts.relative || false
   };
 
   if (supportedAlgos.indexOf(config.algo) === -1) {
