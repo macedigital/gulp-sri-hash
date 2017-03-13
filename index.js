@@ -5,8 +5,11 @@ var crypto = require('crypto');
 var path = require('path');
 var through = require('through2');
 var cheerio = require('cheerio');
+var semver = require('semver');
 var PluginError = require('gulp-util').PluginError;
 
+var NODE_VERSION_WITH_NEW_BUFFER_API = '4.5.0';
+var useDeprecatedBufferApi = semver.lt(process.version, NODE_VERSION_WITH_NEW_BUFFER_API);
 var PLUGIN_NAME = 'gulp-sri-hash';
 var DEFAULT_ALGO = 'sha384';
 var DEFAULT_SELECTOR = 'link[href][rel=stylesheet]:not([integrity]), script[src]:not([integrity])';
@@ -15,6 +18,14 @@ var cache;
 
 module.exports = gulpSriHashPlugin;
 module.exports.PLUGIN_NAME = PLUGIN_NAME;
+
+function makeBufferFromString(string) {
+  if (useDeprecatedBufferApi) {
+    return new Buffer(string);
+  }
+
+  return Buffer.from(string);
+}
 
 function normalizePath(node, config) {
   var src = node.name == 'script' ? node.attribs.src : node.attribs.href;
@@ -51,9 +62,8 @@ function resolveAbsolutePath(file, localPath) {
 
 function calculateSri(fullPath, algorithm) {
   var file = fs.readFileSync(fullPath);
-  var digest = crypto.createHash(algorithm).update(file).digest();
 
-  return Buffer.from(digest).toString('base64');
+  return crypto.createHash(algorithm).update(file).digest('base64');
 }
 
 function getFileHash(fullPath, algorithm) {
@@ -73,7 +83,7 @@ function updateDOM(file, config) {
 
   if ($candidates.length > 0) {
     $candidates.each(addIntegrityAttribute);
-    file.contents = Buffer.from($.html());
+    file.contents = makeBufferFromString($.html());
   }
 
   return file;
