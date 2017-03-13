@@ -1,0 +1,16 @@
+{
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-unused-vars": ["error", { "args": "after-used" }]
+  },
+  "env": {
+    "commonjs": true,
+    "es6": false,
+    "mocha": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 5,
+    "sourceType": "module"
+  }
+}
