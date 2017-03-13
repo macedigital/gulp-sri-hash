@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea
 *.iws
+.vscode
 /out/
 .idea_modules/
 logs
