@@ -1,3 +1,5 @@
+# gulp-sri-hash
+
 [![NPM Version][npm-image]][npm-url]
 [![Dependency Status][deps-image]][deps-url]
 [![Build Status][ci-image]][ci-url]
@@ -15,7 +17,9 @@ For an alternative approach, have a look at the [gulp-sri](https://github.com/ma
 
 Install package with NPM and add it to your development dependencies:
 
-`npm install --save-dev gulp-sri-hash`
+```text
+npm install gulp-sri-hash --save-dev
+```
 
 ## Usage
 
@@ -24,7 +28,7 @@ var sriHash = require('gulp-sri-hash');
 
 gulp.task('sri', function() {
   return gulp.src('./**/*.html')
-    // do not modify contents of any referenced css- and js-file after this task ...
+    // do not modify contents of any referenced css- and js-files after this task...
     .pipe(sriHash())
     // ... manipulating html files further, is perfectly fine
     .pipe(gulp.dest('./dist/'));
@@ -37,63 +41,64 @@ Referenced css- and js-files must be accessible from the local filesystem. In or
 
 ## API
 
-#### algo (optional)
-Type: `String`  
-Since: *v1.0.0*
+### algo (optional)
 
-Select hashing algorithm. Supported algorithms: 'sha256', 'sha384', and 'sha512'.
+* Type: `String`
+* Default: `sha384`
+* Since: *v1.0.0*
 
-Default: `sha384`
+Select hashing algorithm. Supported algorithms: `sha256`, `sha384`, and `sha512`.
 
-#### prefix (optional)
-Type: `String`  
-Since: *v1.1.0*
+### prefix (optional)
 
-Strips string from beginning of referenced URI in HTMl files. Useful if references do not match directory structure or already contain CDN hostname.
+* Type: `String`
+* Default: `''`
+* Since: *v1.1.0*
 
-Default: ''
+Strips string from beginning of referenced URI in HTML files. Useful if references do not match directory structure or already contain CDN hostname.
 
-#### selector (optional)
-Type: `String`  
-Since: *v1.1.0*
+### selector (optional)
+
+* Type: `String`
+* Default: `link[href][rel=stylesheet]:not([integrity]), script[src]:not([integrity])`
+* Since: *v1.1.0*
 
 Only look for nodes matching this custom (jQuery-style) selector.
 
-Default: 'link[href][rel=stylesheet]:not([integrity]), script[src]:not([integrity])'
+### relative (optional)
 
-#### relative (optional)
-Type: `Boolean`  
-Since: *v1.2.0*
+* Type: `Boolean`
+* Default: `false`
+* Since: *v1.2.0*
 
-Controls whether referenced files should be resolved relative to a base folder, or relative to the location of the html file.
+Controls whether referenced files should be resolved relative to a base folder, or relative to the location of the HTML file.
 
-Inspired by https://github.com/macedigital/gulp-sri-hash/pull/1.
+Inspired by <https://github.com/macedigital/gulp-sri-hash/pull/1>.
 
-Default: 'false'
-
-### Example
+## Example
 
 Following snippet shows all options in action:
 
 ```js
   // ...
   .pipe(sriHash({
-    algo: 'sha512', // use strong hashing
-    prefix: '/assets', // no trailing slash
-    selector: 'link[href]', // limit selector,
-    relative: true // assets reside relative to html file
+    algo: 'sha512',         // use strong hashing
+    prefix: '/assets',      // no trailing slash
+    selector: 'link[href]', // limit selector
+    relative: true          // assets reside relative to html file
   }))
   // ...
 ```
+
 ## LICENSE
 
 MIT License
 
 [npm-image]:https://img.shields.io/npm/v/gulp-sri-hash.svg?style=flat
 [npm-url]:https://www.npmjs.com/package/gulp-sri-hash
-[deps-image]:https://david-dm.org/macedigital/gulp-sri-hash.svg
+[deps-image]:https://img.shields.io/david/macedigital/gulp-sri-hash.svg
 [deps-url]:https://david-dm.org/macedigital/gulp-sri-hash
-[ci-image]: https://api.travis-ci.org/macedigital/gulp-sri-hash.svg?branch=master&style=flat
+[ci-image]: https://img.shields.io/travis/macedigital/gulp-sri-hash/master.svg
 [ci-url]: https://travis-ci.org/macedigital/gulp-sri-hash
 [codecov-image]:https://img.shields.io/codecov/c/github/macedigital/gulp-sri-hash.svg?style=flat
 [codecov-url]:https://codecov.io/github/macedigital/gulp-sri-hash
