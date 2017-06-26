@@ -31,7 +31,6 @@
     "cheerio": "^0.22.0",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.7",
-    "semver": "^5.3.0",
     "through2": "^2.0.1"
   },
   "engines": {
