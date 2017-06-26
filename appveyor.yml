@@ -1,0 +1,25 @@
+environment:
+  matrix:
+    - nodejs_version: "4"
+    - nodejs_version: "6"
+    - nodejs_version: "8"
+
+platform:
+  - x64
+
+init:
+  - git config --global core.autocrlf true
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm install
+
+test_script:
+  # Debugging
+  - node --version
+  - npm --version
+  # Run tests
+  - npm test
+
+# Don't actually build.
+build: off
