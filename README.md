@@ -3,6 +3,7 @@
 [![NPM Version][npm-image]][npm-url]
 [![Dependency Status][deps-image]][deps-url]
 [![Build Status][ci-image]][ci-url]
+[![Build Status][appveyor-image]][appveyor-url]
 [![Code Coverage status][codecov-image]][codecov-url]
 
 Adds [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) hashes to HTML files.
@@ -42,6 +43,10 @@ Referenced css- and js-files must be accessible from the local filesystem. In or
 *Since v1.3.0:*
 
 A `crossorigin=anonymous` attribute will be added to all updated DOM nodes, unless the attribute has been already been set to value `use-credentials`. In the latter case the `crossorigin` attribute is left unchanged.
+
+**For Windows Users:**
+
+Make sure that all non-binary files (e.g. css- and js-files) are saved with `LF` file endings. Not doing so will cause a [file checksum mismatch](https://github.com/macedigital/gulp-sri-hash/issues/6) when running tests or fetching deployed assets from a web server. 
 
 ## API
 
@@ -106,3 +111,6 @@ MIT License
 [ci-url]: https://travis-ci.org/macedigital/gulp-sri-hash
 [codecov-image]:https://img.shields.io/codecov/c/github/macedigital/gulp-sri-hash.svg?style=flat
 [codecov-url]:https://codecov.io/github/macedigital/gulp-sri-hash
+[appveyor-image]:https://ci.appveyor.com/api/projects/status/in9jtvifuxc0ct9w?svg=true
+[appveyor-url]:https://ci.appveyor.com/project/macedigital/gulp-sri-hash
+
