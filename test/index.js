@@ -163,15 +163,23 @@ describe('gulp-sri-hash', function () {
             .pipe(plugin({algo: algo, relative: true}))
             .pipe(streamAssert.length(2))
             .pipe(streamAssert.first(function (vinyl) {
+              var expectedPath = ['nested', 'folder', 'index.html'];
+              var actualPath = vinyl.path.split(path.sep).slice(-3);
+
               assertCount(vinyl.contents, 'link[integrity="' + styleHash +'"][crossorigin=anonymous]', 3);
               assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"][crossorigin=anonymous]', 2);
               assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"][crossorigin=use-credentials]', 1);
-              assert.ok(vinyl.path.match(/nested\/folder\/index\.html$/))
+
+              assert.deepStrictEqual(actualPath, expectedPath);
             }))
             .pipe(streamAssert.second(function (vinyl) {
+              var expectedPath = ['nested', 'folder', 'html', 'index.html'];
+              var actualPath = vinyl.path.split(path.sep).slice(-4);
+
               assertCount(vinyl.contents, 'link[integrity="' + styleHash + '"][crossorigin=anonymous]', 1);
               assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"][crossorigin=anonymous]', 1);
-              assert.ok(vinyl.path.match(/nested\/folder\/html\/index\.html$/))
+
+              assert.deepStrictEqual(actualPath, expectedPath);
             }))
             .pipe(streamAssert.end(done));
         });
