@@ -39,6 +39,10 @@ This will look for css and js file references contained in all html-files, calcu
 
 Referenced css- and js-files must be accessible from the local filesystem. In order to calculate correct hashes, style and script files should not be modified any further by build steps running later.
 
+*Since v1.3.0:*
+
+A `crossorigin=anonymous` attribute will be added to all updated DOM nodes, unless the attribute has been already been set to value `use-credentials`. In the latter case the `crossorigin` attribute is left unchanged.
+
 ## API
 
 ### algo (optional)
