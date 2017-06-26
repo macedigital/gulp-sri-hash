@@ -22,9 +22,9 @@
     "url": "https://github.com/macedigital/gulp-sri-hash.git"
   },
   "devDependencies": {
-    "eslint": "^3.17.1",
+    "eslint": "^4.1.1",
     "istanbul": "^0.4.5",
-    "mocha": "^3.0.2",
+    "mocha": "^3.4.2",
     "stream-assert": "^2.0.3"
   },
   "dependencies": {
