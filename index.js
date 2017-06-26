@@ -84,7 +84,9 @@ function updateDOM(file, config) {
     if (localPath) {
       resolver = config.relative ? resolveRelativePath : resolveAbsolutePath;
       $(node).attr('integrity', getFileHash(resolver(file, localPath), config.algo));
-      $(node).attr('crossorigin', 'anonymous');
+      if ($(node).attr('crossorigin') !== 'use-credentials') {
+        $(node).attr('crossorigin', 'anonymous');
+      }
     }
   }
 }
