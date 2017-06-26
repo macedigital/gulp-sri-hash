@@ -34,8 +34,8 @@ function normalizePath(node, config) {
   }
 
   // make path "rel-absolute"
-  if (src.charCodeAt(0) !== 47) {
-    src = '/' + src;
+  if (src.charCodeAt(0) !== path.sep.charCodeAt(0)) {
+    src = path.sep + src;
   }
 
   return src;
