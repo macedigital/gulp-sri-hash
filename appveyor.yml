@@ -8,7 +8,8 @@ platform:
   - x64
 
 init:
-  - git config --global core.autocrlf true
+  - git config --global core.eol lf
+  - git config --global core.autocrlf input
 
 install:
   - ps: Install-Product node $env:nodejs_version
