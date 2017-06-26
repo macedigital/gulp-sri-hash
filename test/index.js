@@ -96,7 +96,7 @@ describe('gulp-sri-hash', function () {
             .pipe(plugin({algo: algo}))
             .pipe(streamAssert.length(3))
             .pipe(streamAssert.first(function (vinyl) {
-              assertCount(vinyl.contents, '[integrity]', 2);
+              assertCount(vinyl.contents, '[integrity][crossorigin=anonymous]', 0);
               assertCount(vinyl.contents, '[integrity="incorrect-but-must-not-be-altered"]', 2);
             }))
             .pipe(streamAssert.second(function (vinyl) {
@@ -106,8 +106,8 @@ describe('gulp-sri-hash', function () {
               var checksum = require(fixtures('flat/checksum.json'))[algo];
               var hash = [algo, checksum].join('-');
               assert.ok(vinyl.path.match(/transform\.html$/));
-              assertCount(vinyl.contents, '[integrity]', 3);
-              assertCount(vinyl.contents, '[integrity="'+hash+'"]', 3);
+              assertCount(vinyl.contents, '[integrity][crossorigin=anonymous]', 3);
+              assertCount(vinyl.contents, '[integrity="'+hash+'"][crossorigin=anonymous]', 3);
             }))
             .pipe(streamAssert.end(done))
           ;
@@ -124,8 +124,8 @@ describe('gulp-sri-hash', function () {
           }))
           .pipe(plugin({selector: 'script'}))
           .pipe(streamAssert.first(function (vinyl) {
-            assertCount(vinyl.contents, '[integrity]', 1);
-            assertCount(vinyl.contents, 'script[integrity]', 1);
+            assertCount(vinyl.contents, '[integrity][crossorigin=anonymous]', 1);
+            assertCount(vinyl.contents, 'script[integrity][crossorigin=anonymous]', 1);
           }))
           .pipe(streamAssert.end(done))
         ;
@@ -139,7 +139,7 @@ describe('gulp-sri-hash', function () {
           }))
           .pipe(plugin({prefix: 'https://secure.com'}))
           .pipe(streamAssert.first(function (vinyl) {
-            assertCount(vinyl.contents, 'link[href^="https://secure"][integrity]', 1);
+            assertCount(vinyl.contents, 'link[href^="https://secure"][integrity][crossorigin=anonymous]', 1);
           }))
           .pipe(streamAssert.end(done));
       });
@@ -161,13 +161,13 @@ describe('gulp-sri-hash', function () {
             .pipe(plugin({algo: algo, relative: true}))
             .pipe(streamAssert.length(2))
             .pipe(streamAssert.first(function (vinyl) {
-              assertCount(vinyl.contents, 'link[integrity="' + styleHash +'"]', 3);
-              assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"]', 3);
+              assertCount(vinyl.contents, 'link[integrity="' + styleHash +'"][crossorigin=anonymous]', 3);
+              assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"][crossorigin=anonymous]', 3);
               assert.ok(vinyl.path.match(/nested\/folder\/index\.html$/))
             }))
             .pipe(streamAssert.second(function (vinyl) {
-              assertCount(vinyl.contents, 'link[integrity="' + styleHash + '"]', 1);
-              assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"]', 1);
+              assertCount(vinyl.contents, 'link[integrity="' + styleHash + '"][crossorigin=anonymous]', 1);
+              assertCount(vinyl.contents, 'script[integrity="' + scriptHash + '"][crossorigin=anonymous]', 1);
               assert.ok(vinyl.path.match(/nested\/folder\/html\/index\.html$/))
             }))
             .pipe(streamAssert.end(done));
@@ -186,7 +186,7 @@ describe('gulp-sri-hash', function () {
           }))
           .pipe(plugin({selector: 'script[data-sri-hash=1]'}))
           .pipe(streamAssert.first(function (vinyl) {
-            assertCount(vinyl.contents, '[integrity="' + checksum + '"]', 1);
+            assertCount(vinyl.contents, '[integrity="' + checksum + '"][crossorigin=anonymous]', 1);
           }))
           .pipe(streamAssert.end(done));
       });
