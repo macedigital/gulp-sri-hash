@@ -38,6 +38,11 @@ function normalizePath(node, config) {
     src = path.sep + src;
   }
 
+  // remove query-string from path
+  if (src.indexOf('?') !== -1) {
+    return src.substr(0, src.indexOf('?'));
+  }
+
   return src;
 }
 
