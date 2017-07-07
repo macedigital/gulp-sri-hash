@@ -40,13 +40,11 @@ This will look for css and js file references contained in all html-files, calcu
 
 Referenced css- and js-files must be accessible from the local filesystem. In order to calculate correct hashes, style and script files should not be modified any further by build steps running later.
 
-*Since v1.3.0:*
+**Line Endings:**
 
-A `crossorigin=anonymous` attribute will be added to all updated DOM nodes, unless the attribute has been already been set to value `use-credentials`. In the latter case the `crossorigin` attribute is left unchanged.
-
-**For Windows Users:**
-
-Make sure that all non-binary files (e.g. css- and js-files) are saved with `LF` file endings. Not doing so will cause a [file checksum mismatch](https://github.com/macedigital/gulp-sri-hash/issues/6) when running tests or fetching deployed assets from a web server. 
+Content hashing is sensitive to differences in line-endings. On Windows, the default is `CRLF`, whereas (all?) other Operating Systems default to `LF`.
+You're good, as long the files use the same end-of-line sequence locally as well as on the server that delivers those asset files.
+On the other hand, a change of line-endings after content hashing will cause a [file checksum mismatch](https://github.com/macedigital/gulp-sri-hash/issues/6).
 
 ## API
 
@@ -98,6 +96,16 @@ Following snippet shows all options in action:
   }))
   // ...
 ```
+
+## Changelog
+
+*Since v1.3.0:*
+
+A `crossorigin=anonymous` attribute will be added to all updated DOM nodes, unless the attribute has been already been set to value `use-credentials`. In the latter case the `crossorigin` attribute is left unchanged.
+
+*Since v1.4.0:*
+
+Querystring-like components in file paths are ignored when resolving local files. As an example, the given string `/folder/style.css?v=somehash` will resolve to local file `/folder/style.css`.
 
 ## LICENSE
 
