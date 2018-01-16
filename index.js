@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var path = require('path');
 var through = require('through2');
 var cheerio = require('cheerio');
-var PluginError = require('gulp-util').PluginError;
+var PluginError = require('plugin-error');
 
 var PLUGIN_NAME = 'gulp-sri-hash';
 var DEFAULT_ALGO = 'sha384';
