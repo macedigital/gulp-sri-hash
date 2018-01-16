@@ -24,13 +24,13 @@
   "dependencies": {
     "cheerio": "^0.22.0",
     "gulp": "^3.9.1",
-    "plugin-error": "^0.1.2",
+    "plugin-error": "^1.0.0",
     "through2": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^4.1.1",
     "istanbul": "^0.4.5",
-    "mocha": "^3.4.2",
+    "mocha": "^4.1.0",
     "stream-assert": "^2.0.3"
   },
   "engines": {
