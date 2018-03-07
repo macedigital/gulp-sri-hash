@@ -1,5 +1,7 @@
 # gulp-sri-hash
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/macedigital/gulp-sri-hash.svg)](https://greenkeeper.io/)
+
 [![NPM Version][npm-image]][npm-url]
 [![Dependency Status][deps-image]][deps-url]
 [![Build Status][ci-image]][ci-url]
