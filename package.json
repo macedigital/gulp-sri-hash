@@ -6,6 +6,8 @@
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
+    "preversion": "git stash && npm test",
+    "postversion": "git push && git push --tags && git stash pop",
     "test": "mocha",
     "test-cov": "istanbul cover _mocha -- 2> /dev/null",
     "test-travis": "istanbul cover _mocha --report lcovonly -- --reporter spec 2> /dev/null"
@@ -16,6 +18,11 @@
     "sri",
     "sub-resource-integrity"
   ],
+  "files": [
+    "index.js",
+    "LICENSE",
+    "README.md"
+  ],
   "author": "Matthias Adler <macedigital@gmail.com>",
   "license": "ISC",
   "repository": {
@@ -23,18 +30,21 @@
     "url": "https://github.com/macedigital/gulp-sri-hash.git"
   },
   "dependencies": {
-    "cheerio": "^0.22.0",
-    "gulp": "^3.9.1",
+    "cheerio": "^1.0.0-rc.2",
+    "gulp": "^4.0.0",
     "plugin-error": "^1.0.1",
     "through2": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.0.3",
     "stream-assert": "^2.0.3"
   },
   "engines": {
-    "node": ">= 4.x"
+    "node": ">= 6.x",
+    "npm": ">= 5.x"
   }
 }
