@@ -6,6 +6,8 @@
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
+    "preversion": "git stash && npm test",
+    "postversion": "git push && git push --tags && git stash pop",
     "test": "mocha",
     "test-cov": "istanbul cover _mocha -- 2> /dev/null",
     "test-travis": "istanbul cover _mocha --report lcovonly -- --reporter spec 2> /dev/null"
