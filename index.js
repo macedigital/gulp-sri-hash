@@ -75,8 +75,7 @@ const updateDOM = (file, config) => {
 
   if ($candidates.length > 0) {
     $candidates.each(addIntegrityAttribute);
-    // eslint-disable-next-line no-param-reassign
-    file.contents = Buffer.from($.html());
+    Object.assign(file, { contents: Buffer.from($.html()) });
   }
 
   return file;
