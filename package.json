@@ -4,10 +4,11 @@
   "description": "Gulp plugin for adding Sub-Resource-Integrity (SRI) hashes in-place to asset links found in HTML files.",
   "main": "index.js",
   "scripts": {
-    "pretest": "node_modules/.bin/eslint .",
-    "test": "node_modules/.bin/_mocha test",
-    "test-cov": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --reporter dot --check-leaks test/ 2> /dev/null",
-    "test-travis": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/ 2> /dev/null"
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "mocha",
+    "test-cov": "istanbul cover _mocha -- 2> /dev/null",
+    "test-travis": "istanbul cover _mocha --report lcovonly -- --reporter spec 2> /dev/null"
   },
   "keywords": [
     "gulp",

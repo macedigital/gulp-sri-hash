@@ -1,0 +1,5 @@
+--reporter dot
+--check-leaks
+--throw-deprecation
+--forbid-only
+--forbid-pending
