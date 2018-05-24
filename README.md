@@ -27,9 +27,9 @@ npm install gulp-sri-hash --save-dev
 ## Usage
 
 ```js
-var sriHash = require('gulp-sri-hash');
+const sriHash = require('gulp-sri-hash');
 
-gulp.task('sri', function() {
+gulp.task('sri', () => {
   return gulp.src('./**/*.html')
     // do not modify contents of any referenced css- and js-files after this task...
     .pipe(sriHash())
@@ -101,13 +101,17 @@ Following snippet shows all options in action:
 
 ## Changelog
 
-*Since v1.3.0:*
+*Since v2.0.0:*
 
-A `crossorigin=anonymous` attribute will be added to all updated DOM nodes, unless the attribute has been already been set to value `use-credentials`. In the latter case the `crossorigin` attribute is left unchanged.
+Require a peer-dependency of gulp 4.x and drop support for nodejs 4.x which reached its [End-of-Life on April 30th 2018](https://medium.com/@nodejs/april-2018-release-updates-from-the-node-js-project-71687e1f7742).
 
 *Since v1.4.0:*
 
 Querystring-like components in file paths are ignored when resolving local files. As an example, the given string `/folder/style.css?v=somehash` will resolve to local file `/folder/style.css`.
+
+*Since v1.3.0:*
+
+A `crossorigin=anonymous` attribute will be added to all updated DOM nodes, unless the attribute has been already been set to value `use-credentials`. In the latter case the `crossorigin` attribute is left unchanged.
 
 ## LICENSE
 
