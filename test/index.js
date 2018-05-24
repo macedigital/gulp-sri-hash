@@ -33,8 +33,16 @@ describe('gulp-sri-hash', function () {
 
   describe('plugin()', function () {
 
-    it('should pass through null files', function (done) {
-      gulp.src(fixtures('doesnotexist'))
+    it('should pass through singular null files', function (done) {
+      gulp.src(fixtures('doesnotexist'), { allowEmpty: true })
+        .pipe(streamAssert.length(0))
+        .pipe(plugin())
+        .pipe(streamAssert.length(0))
+        .pipe(streamAssert.end(done));
+    });
+
+    it('should pass through glob of null files', function (done) {
+      gulp.src(fixtures('does/not/exists/**/*'), { allowEmpty: false })
         .pipe(streamAssert.length(0))
         .pipe(plugin())
         .pipe(streamAssert.length(0))
@@ -42,7 +50,7 @@ describe('gulp-sri-hash', function () {
     });
 
     it('should throw on streams', function (done) {
-        gulp.src(fixtures('flat/*.html'), {buffer: false})
+        gulp.src(fixtures('flat/*.html'), { buffer: false })
           .pipe(streamAssert.length(3))
           .pipe(plugin())
           .on('error', function (err) {
