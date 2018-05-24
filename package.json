@@ -16,6 +16,11 @@
     "sri",
     "sub-resource-integrity"
   ],
+  "files": [
+    "index.js",
+    "LICENSE",
+    "README.md"
+  ],
   "author": "Matthias Adler <macedigital@gmail.com>",
   "license": "ISC",
   "repository": {
