@@ -1,16 +1,13 @@
 {
   "root": true,
-  "extends": "eslint:recommended",
-  "rules": {
-    "no-unused-vars": ["error", { "args": "after-used" }]
-  },
+  "extends": "airbnb-base",
   "env": {
     "commonjs": true,
     "es6": true,
     "node": true
   },
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 6,
     "sourceType": "module"
   }
 }

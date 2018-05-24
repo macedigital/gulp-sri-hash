@@ -1,31 +1,26 @@
-'use strict';
+const fs = require('fs');
+const crypto = require('crypto');
+const path = require('path');
+const through = require('through2');
+const cheerio = require('cheerio');
+const PluginError = require('plugin-error');
 
-var fs = require('fs');
-var crypto = require('crypto');
-var path = require('path');
-var through = require('through2');
-var cheerio = require('cheerio');
-var PluginError = require('plugin-error');
+const PLUGIN_NAME = 'gulp-sri-hash';
+const DEFAULT_ALGO = 'sha384';
+const DEFAULT_SELECTOR = 'link[href][rel=stylesheet]:not([integrity]), script[src]:not([integrity])';
+const supportedAlgos = new Set(['sha256', 'sha384', 'sha512']);
+const cache = new Map();
 
-var PLUGIN_NAME = 'gulp-sri-hash';
-var DEFAULT_ALGO = 'sha384';
-var DEFAULT_SELECTOR = 'link[href][rel=stylesheet]:not([integrity]), script[src]:not([integrity])';
-var supportedAlgos = ['sha256', 'sha384', 'sha512'];
-var cache;
-
-module.exports = gulpSriHashPlugin;
-module.exports.PLUGIN_NAME = PLUGIN_NAME;
-
-function normalizePath(node, config) {
-  var src = node.name == 'script' ? node.attribs.src : node.attribs.href;
+const normalizePath = (node, { prefix }) => {
+  let src = node.name === 'script' ? node.attribs.src : node.attribs.href;
 
   if (!src) {
     return null;
   }
 
   // strip prefix if present and match
-  if (config.prefix.length && src.indexOf(config.prefix) === 0) {
-    src = src.slice(config.prefix.length);
+  if (prefix.length && src.indexOf(prefix) === 0) {
+    src = src.slice(prefix.length);
   }
 
   // ignore paths that look like like urls as they cannot be resolved on local filesystem
@@ -44,95 +39,82 @@ function normalizePath(node, config) {
   }
 
   return src;
-}
+};
 
-function resolveRelativePath(file, localPath) {
-  return path.join(path.dirname(file.path), localPath);
-}
+const resolveRelativePath = (file, localPath) => path.join(path.dirname(file.path), localPath);
 
-function resolveAbsolutePath(file, localPath) {
-  return path.normalize(file.base + localPath)
-}
+const resolveAbsolutePath = (file, localPath) => path.normalize(file.base + localPath);
 
-function calculateSri(fullPath, algorithm) {
-  var file = fs.readFileSync(fullPath);
+const calculateSri = (fullPath, algorithm) => {
+  const file = fs.readFileSync(fullPath);
 
   return crypto.createHash(algorithm).update(file).digest('base64');
-}
+};
 
-function getFileHash(fullPath, algorithm) {
-  if (!cache[fullPath]) {
-    cache[fullPath] = [
-      algorithm,
-      calculateSri(fullPath, algorithm)
-    ].join('-');
+const getFileHash = (fullPath, algorithm) => {
+  if (!cache.has(fullPath)) {
+    cache.set(fullPath, [algorithm, calculateSri(fullPath, algorithm)].join('-'));
   }
 
-  return cache[fullPath];
-}
+  return cache.get(fullPath);
+};
 
-function updateDOM(file, config) {
-  var $ = cheerio.load(file.contents);
-  var $candidates = $(config.selector);
-
-  if ($candidates.length > 0) {
-    $candidates.each(addIntegrityAttribute);
-    file.contents = new Buffer($.html());
-  }
-
-  return file;
-
-  function addIntegrityAttribute(idx, node) {
-    var localPath = normalizePath(node, config);
-    var resolver;
-
+const updateDOM = (file, config) => {
+  const $ = cheerio.load(file.contents);
+  const $candidates = $(config.selector);
+  const resolver = config.relative ? resolveRelativePath : resolveAbsolutePath;
+  const addIntegrityAttribute = (idx, node) => {
+    const localPath = normalizePath(node, config);
     if (localPath) {
-      resolver = config.relative ? resolveRelativePath : resolveAbsolutePath;
       $(node).attr('integrity', getFileHash(resolver(file, localPath), config.algo));
       if ($(node).attr('crossorigin') !== 'use-credentials') {
         $(node).attr('crossorigin', 'anonymous');
       }
     }
-  }
-}
-
-function configure(options) {
-  var opts = options || {};
-  var config = {
-    algo: opts.algo || DEFAULT_ALGO,
-    prefix: opts.prefix || '',
-    selector: opts.selector || DEFAULT_SELECTOR,
-    relative: !!opts.relative || false
   };
 
-  if (supportedAlgos.indexOf(config.algo) === -1) {
+  if ($candidates.length > 0) {
+    $candidates.each(addIntegrityAttribute);
+    // eslint-disable-next-line no-param-reassign
+    file.contents = Buffer.from($.html());
+  }
+
+  return file;
+};
+
+const transformFactory = config => function transform(file, encoding, callback) {
+  if (file.isBuffer()) {
+    return callback(null, updateDOM(file, config));
+  }
+
+  if (file.isStream()) {
+    this.emit('error', new PluginError(PLUGIN_NAME, 'Streams are not supported!'));
+  }
+
+  return callback(null, file);
+};
+
+const configure = (options = {}) => {
+  const config = Object.assign({}, {
+    algo: options.algo || DEFAULT_ALGO,
+    prefix: options.prefix || '',
+    selector: options.selector || DEFAULT_SELECTOR,
+    relative: !!options.relative || false,
+  });
+
+  if (!supportedAlgos.has(config.algo)) {
     throw new PluginError(PLUGIN_NAME, 'Hashing algorithm is unsupported');
   }
 
   return config;
-}
+};
 
-function gulpSriHashPlugin(options) {
-  var config = configure(options);
-  var stream = through.obj(pipeHandler);
-
+const gulpSriHashPlugin = (options) => {
   // always clear cache per invocation, e.g. when part of a `gulp.watch`
-  cache = {};
-  // shouldn't matter, but anyway @link https://nodejs.org/dist/latest-v6.x/docs/api/stream.html#stream_additional_notes
-  stream.resume();
+  cache.clear();
 
-  return stream;
+  return through.obj(transformFactory(configure(options)));
+};
 
-  function pipeHandler(file, encoding, callback) {
-
-    if (file.isStream()) {
-      this.emit('error', new PluginError(PLUGIN_NAME, 'Streams are not supported!'));
-    }
-
-    if (file.isBuffer()) {
-      return callback(null, updateDOM(file, config));
-    }
-
-    return callback(null, file);
-  }
-}
+module.exports = gulpSriHashPlugin;
+module.exports.PLUGIN_NAME = PLUGIN_NAME;
