@@ -34,7 +34,7 @@ const normalizePath = (node, { prefix }) => {
   }
 
   // remove query-string from path
-  if (src.indexOf('?') !== -1) {
+  if (src.includes('?')) {
     return src.substr(0, src.indexOf('?'));
   }
 
