@@ -60,7 +60,10 @@ const getFileHash = (fullPath, algorithm) => {
 };
 
 const updateDOM = (file, config) => {
-  const $ = cheerio.load(file.contents);
+    if (!file.cheerio) {		
+    file.cheerio = cheerio.load(file.contents)		
+  }
+  const $ = file.cheerio;
   const $candidates = $(config.selector);
   const resolver = config.relative ? resolveRelativePath : resolveAbsolutePath;
   const addIntegrityAttribute = (idx, node) => {
