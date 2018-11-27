@@ -26,32 +26,28 @@ describe('gulp-sri-hash', () => {
   });
 
   describe('plugin()', () => {
-    it('should pass through singular null files', done =>
-      gulp.src(fixtures('doesnotexist'), { allowEmpty: true })
-        .pipe(streamAssert.length(0))
-        .pipe(plugin())
-        .pipe(streamAssert.length(0))
-        .pipe(streamAssert.end(done)));
+    it('should pass through singular null files', done => gulp.src(fixtures('doesnotexist'), { allowEmpty: true })
+      .pipe(streamAssert.length(0))
+      .pipe(plugin())
+      .pipe(streamAssert.length(0))
+      .pipe(streamAssert.end(done)));
 
-    it('should pass through glob of null files', done =>
-      gulp.src(fixtures('does/not/exists/**/*'), { allowEmpty: false })
-        .pipe(streamAssert.length(0))
-        .pipe(plugin())
-        .pipe(streamAssert.length(0))
-        .pipe(streamAssert.end(done)));
+    it('should pass through glob of null files', done => gulp.src(fixtures('does/not/exists/**/*'), { allowEmpty: false })
+      .pipe(streamAssert.length(0))
+      .pipe(plugin())
+      .pipe(streamAssert.length(0))
+      .pipe(streamAssert.end(done)));
 
-    it('should throw on streams', done =>
-      gulp.src(fixtures('flat/*.html'), { buffer: false })
-        .pipe(streamAssert.length(3))
-        .pipe(plugin())
-        .on('error', (err) => {
-          assert.strictEqual(err.message, 'Streams are not supported!');
-          done();
-        }));
+    it('should throw on streams', done => gulp.src(fixtures('flat/*.html'), { buffer: false })
+      .pipe(streamAssert.length(3))
+      .pipe(plugin())
+      .on('error', (err) => {
+        assert.strictEqual(err.message, 'Streams are not supported!');
+        done();
+      }));
 
     it('should bail on unsupported hashing algorithm', () => {
-      assert.throws(() =>
-        gulp.src(fixtures('**/*')).pipe(plugin({ algo: 'invalid' })), /Hashing algorithm is unsupported/);
+      assert.throws(() => gulp.src(fixtures('**/*')).pipe(plugin({ algo: 'invalid' })), /Hashing algorithm is unsupported/);
     });
 
     it('should ignore missing external files', (done) => {
