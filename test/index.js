@@ -178,5 +178,17 @@ describe('gulp-sri-hash', () => {
           .pipe(streamAssert.end(done));
       });
     });
+
+    describe('cheerio integration', () => {
+      it('should not needlessly escape html entities', (done) => {
+        gulp.src(fixtures('apostrophe.html'))
+          .pipe(streamAssert.length(1))
+          .pipe(plugin())
+          .pipe(streamAssert.first((vinyl) => {
+            assert.strictEqual(vinyl.contents.toString(), '<html><head><title>Main Page | Amyspark’s Domain</title>\n<link href="flat/css/styles.css" rel="stylesheet" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous"></head><body></body></html>');
+          }))
+          .pipe(streamAssert.end(done));
+      });
+    });
   });
 });
