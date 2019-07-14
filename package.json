@@ -1,6 +1,6 @@
 {
   "name": "gulp-sri-hash",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Gulp plugin for adding Sub-Resource-Integrity (SRI) hashes in-place to asset links found in HTML files.",
   "bugs": {
     "url": "https://github.com/macedigital/gulp-sri-hash/issues"
