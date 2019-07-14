@@ -84,6 +84,14 @@ Controls whether referenced files should be resolved relative to a base folder, 
 
 Inspired by <https://github.com/macedigital/gulp-sri-hash/pull/1>.
 
+### cacheParser (optional)
+
+* Type: `Boolean`
+* Default: `false`
+* Since: *v2.2.0*
+
+Controls whether to permit cached cheerio instances, e.g. when using [gulp-cheerio][gulp-cheerio-url] in a previous build step. Be careful when enabling this feature as it can have unintended side-effects.
+
 ## Example
 
 Following snippet shows all options in action:
@@ -127,4 +135,4 @@ MIT License
 [codecov-url]:https://codecov.io/github/macedigital/gulp-sri-hash
 [appveyor-image]:https://ci.appveyor.com/api/projects/status/in9jtvifuxc0ct9w?svg=true
 [appveyor-url]:https://ci.appveyor.com/project/macedigital/gulp-sri-hash
-
+[gulp-cheerio-url]: https://www.npmjs.com/package/gulp-cheerio

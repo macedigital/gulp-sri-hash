@@ -59,13 +59,24 @@ const getFileHash = (fullPath, algorithm) => {
   return cache.get(fullPath);
 };
 
-const updateDOM = (file, config) => {
-  if (!file.cheerio) {
+const getParser = (file, mutateVinyl) => {
+  if (mutateVinyl && file.cheerio) {
+    return file.cheerio;
+  }
+
+  const parser = cheerio.load(file.contents, { decodeEntities: false });
+
+  if (mutateVinyl) {
     Object.assign(file, {
-      cheerio: cheerio.load(file.contents, { decodeEntities: false }),
+      cheerio: parser,
     });
   }
-  const $ = file.cheerio;
+
+  return parser;
+};
+
+const updateDOM = (file, config) => {
+  const $ = getParser(file, config.cacheParser);
   const $candidates = $(config.selector);
   const resolver = config.relative ? resolveRelativePath : resolveAbsolutePath;
   const addIntegrityAttribute = (idx, node) => {
@@ -104,6 +115,7 @@ const configure = (options = {}) => {
     prefix: options.prefix || '',
     selector: options.selector || DEFAULT_SELECTOR,
     relative: !!options.relative || false,
+    cacheParser: !!options.cacheParser || false,
   });
 
   if (!supportedAlgos.has(config.algo)) {

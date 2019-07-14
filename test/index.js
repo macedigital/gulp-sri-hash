@@ -190,5 +190,26 @@ describe('gulp-sri-hash', () => {
           .pipe(streamAssert.end(done));
       });
     });
+
+    describe('gulp-cheerio plugin integration', () => {
+      it('should not attach cheerio to vinyl by default', (done) => {
+        gulp.src(fixtures('apostrophe.html'))
+          .pipe(plugin())
+          .pipe(streamAssert.first((vinyl) => {
+            assert.strictEqual(vinyl.cheerio, undefined);
+          }))
+          .pipe(streamAssert.end(done));
+      });
+      it('should assign cheerio to vinyl when `cacheParser` flag is given', (done) => {
+        gulp.src(fixtures('apostrophe.html'))
+          .pipe(plugin({
+            cacheParser: true,
+          }))
+          .pipe(streamAssert.first((vinyl) => {
+            assert.strictEqual(typeof vinyl.cheerio, 'function');
+          }))
+          .pipe(streamAssert.end(done));
+      });
+    });
   });
 });
