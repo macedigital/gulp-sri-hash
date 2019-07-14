@@ -48,7 +48,7 @@
     "stream-assert": "^2.0.3"
   },
   "engines": {
-    "node": ">= 6.x",
-    "npm": ">= 5.x"
+    "node": ">= 8.x",
+    "npm": ">= 6.x"
   }
 }
