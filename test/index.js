@@ -10,7 +10,7 @@ const nestedChecksums = require('./fixtures/nested/checksum.json');
 
 const plugin = require('../');
 
-const fixtures = glob => path.join(__dirname, 'fixtures', glob);
+const fixtures = (glob) => path.join(__dirname, 'fixtures', glob);
 
 const assertCount = (buffer, selector, num) => {
   const $ = cheerio.load(buffer);
@@ -26,19 +26,19 @@ describe('gulp-sri-hash', () => {
   });
 
   describe('plugin()', () => {
-    it('should pass through singular null files', done => gulp.src(fixtures('doesnotexist'), { allowEmpty: true })
+    it('should pass through singular null files', (done) => gulp.src(fixtures('doesnotexist'), { allowEmpty: true })
       .pipe(streamAssert.length(0))
       .pipe(plugin())
       .pipe(streamAssert.length(0))
       .pipe(streamAssert.end(done)));
 
-    it('should pass through glob of null files', done => gulp.src(fixtures('does/not/exists/**/*'), { allowEmpty: false })
+    it('should pass through glob of null files', (done) => gulp.src(fixtures('does/not/exists/**/*'), { allowEmpty: false })
       .pipe(streamAssert.length(0))
       .pipe(plugin())
       .pipe(streamAssert.length(0))
       .pipe(streamAssert.end(done)));
 
-    it('should throw on streams', done => gulp.src(fixtures('flat/*.html'), { buffer: false })
+    it('should throw on streams', (done) => gulp.src(fixtures('flat/*.html'), { buffer: false })
       .pipe(streamAssert.length(3))
       .pipe(plugin())
       .on('error', (err) => {

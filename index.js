@@ -97,7 +97,7 @@ const updateDOM = (file, config) => {
   return file;
 };
 
-const transformFactory = config => function transform(file, encoding, callback) {
+const transformFactory = (config) => function transform(file, encoding, callback) {
   if (file.isBuffer()) {
     return callback(null, updateDOM(file, config));
   }
@@ -110,13 +110,13 @@ const transformFactory = config => function transform(file, encoding, callback) 
 };
 
 const configure = (options = {}) => {
-  const config = Object.assign({}, {
+  const config = {
     algo: options.algo || DEFAULT_ALGO,
     prefix: options.prefix || '',
     selector: options.selector || DEFAULT_SELECTOR,
     relative: !!options.relative || false,
     cacheParser: !!options.cacheParser || false,
-  });
+  };
 
   if (!supportedAlgos.has(config.algo)) {
     throw new PluginError(PLUGIN_NAME, 'Hashing algorithm is unsupported');
